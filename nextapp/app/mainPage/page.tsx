@@ -51,7 +51,7 @@ export default function MainPage() {
     const chat = chats[index];
     const isGroup = chats[index].isGroup;
     const messages = await axios.get(
-      "http://localhost:5000/messages/get-messages?chatId=" + chat._id
+      `${process.env.NEXT_PUBLIC_BASE_URL}/messages/get-messages?chatId=` + chat._id
     );
     setCurrentChatMessages(messages.data.data);
 
@@ -83,7 +83,7 @@ export default function MainPage() {
   useEffect(() => {
     const handleFetchDirectChat = async () => {
       const res = await axios.post(
-        "http://localhost:5000/chats/getDirectMessageChat",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/getDirectMessageChat`,
         {
           userID: id,
         }
@@ -142,7 +142,7 @@ export default function MainPage() {
 
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
-      "http://localhost:5000/users/getById" + "?username=" + username
+      `${process.env.NEXT_PUBLIC_BASE_URL}/users/getById` + "?username=" + username
     );
     const userId = res.data.findUser._id;
 
@@ -158,7 +158,7 @@ export default function MainPage() {
         userID: myUserId,
       };
       const res = await axios.post(
-        "http://localhost:5000/chats/create-chat",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/create-chat`,
         data
       );
       console.log("res create chat", res);

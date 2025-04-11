@@ -15,13 +15,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
         const loginData = {
           username : credentials.username,
-    
+          password : credentials.password
         }
-        const res = await axios.post('http://localhost:5000/users/login', loginData)
-        const userData = res?.data?.findUser
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/login`, loginData)
+        console.log("resData", res.data)
+        const userData = res?.data
         const cookieStorage = await cookies()
         cookieStorage.set('id', userData._id)
-        cookieStorage.set('username', userData.username)
+        cookieStorage.set('username', credentials.username as string)
         return userData
       }
 
