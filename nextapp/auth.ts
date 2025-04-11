@@ -23,6 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const cookieStorage = await cookies()
         cookieStorage.set('id', userData._id)
         cookieStorage.set('username', credentials.username as string)
+        cookieStorage.set('token', userData.token)
         return userData
       }
 

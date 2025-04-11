@@ -51,7 +51,12 @@ export default function MainPage() {
     const chat = chats[index];
     const isGroup = chats[index].isGroup;
     const messages = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/messages/get-messages?chatId=` + chat._id
+      `${process.env.NEXT_PUBLIC_BASE_URL}/messages/get-messages?chatId=` + chat._id,
+      {
+        headers : {
+          bearer : token
+        }
+      }
     );
     setCurrentChatMessages(messages.data.data);
 
@@ -86,6 +91,11 @@ export default function MainPage() {
         `${process.env.NEXT_PUBLIC_BASE_URL}/chats/getDirectMessageChat`,
         {
           userID: id,
+        },
+        {
+          headers : {
+            bearer : token
+          }
         }
       );
       console.log("resGetDirectMessageChat", res);
@@ -122,10 +132,11 @@ export default function MainPage() {
       if(indexChat < chatState){
         return;
       }
-      else if (indexChat === chatState && message.sender._id === myUserId) {
+      else if (indexChat !== -1 && indexChat === chatState && message.sender._id === myUserId) {
         setChatState(0);
       } else if (
-        indexChat !== 0 &&
+        chatState > -1 &&
+        indexChat > 0 &&
         chatsCopy.length > 1 &&
         message.sender._id !== myUserId &&
         indexChat !== chatState
@@ -139,12 +150,17 @@ export default function MainPage() {
       socket?.off("receive-message", handleReceiveMessage);
     };
   }, [chatState, chats, socket]);
-
+  const token = getCookie('token')
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/users/getById` + "?username=" + username
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
+      {
+        headers : {
+          bearer : token
+        }
+      }
     );
-    const userId = res.data.findUser._id;
+    const userId = res.data._id;
 
     const confirm = window.confirm(
       "Do you want to create chat with this user?"
@@ -159,12 +175,18 @@ export default function MainPage() {
       };
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/chats/create-chat`,
-        data
+        data,
+        {
+          headers : {
+            bearer : token
+          }
+        }
       );
       console.log("res create chat", res);
       if (!res.data.success) {
         alert(res.data.message);
       }
+      
     }
   };
   const handleSendMessage = (

@@ -125,7 +125,7 @@ export default function HomeComponent() {
         username: data.username,
         id,
       };
-      // socket?.emit("register-user", userData);
+      socket?.emit("register-user", userData);
       router.push(`/mainPage`);
     } else {
       alert("Login failed");

@@ -36,16 +36,22 @@ export default function CreateGroupCommand({
     []
   );
   const [name, setName] = useState<string>("");
-
+  const [isCreating, setIsCreating] = useState(false);
   const [groupMember, setGroupMember] = useState<
     { _id: string; username: string }[]
   >([]);
   const [isCreateGroup, setIsCreateGroup] = useState<boolean>(false);
   const myUserId = getCookie("id");
+  const token = getCookie("token");
   useEffect(() => {
     const handleFetchAllUser = async () => {
       const allUser = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/users/allUser`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/allUser`,
+        {
+          headers: {
+            bearer: token,
+          },
+        }
       );
       const allUserData: { username: string; _id: string }[] =
         allUser?.data?.data.filter(
@@ -68,36 +74,47 @@ export default function CreateGroupCommand({
   const [open, setOpen] = useState<boolean>(false);
 
   const handleCreateGroup = async (name: string) => {
+    if (isCreating) return;
+    setIsCreating(true);
+
     try {
       const data = {
         isGroup: true,
         participants: [...groupMember.map((member) => member._id), myUserId],
-        name: name,
+        name,
         userID: myUserId,
       };
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/chats/create-chat`,
-        data
+        data,
+        {
+          headers : {
+            bearer : token
+          }
+        }
       );
+
       if (response.data.success === false) {
         alert(response.data.message);
         return;
       }
+
       console.log("chat res", response);
       setIsCreateGroup(false);
-
       setOpen(false);
       setRefreshKey(!refreshKey);
     } catch (error) {
       console.error("Error creating group:", error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gray-500 border-gray-500">new Chats</Button>
+        <Button className="bg-gray-500 border-gray-500">New Chat</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -150,20 +167,29 @@ export default function CreateGroupCommand({
           {!isCreateGroup ? (
             <Button
               className="w-full bg-white text-black"
-              onClick={() => setIsCreateGroup(true)}
+              onClick={() => {
+                setIsCreateGroup(true);
+                setName("");
+                setGroupMember([]);
+              }}
             >
               Create Group
             </Button>
           ) : (
             <div>
-              
               <Button
                 className="w-full bg-red-400 text-white "
                 onClick={() => setIsCreateGroup(false)}
               >
                 Cancel
               </Button>
-              <Input type="text" className='mt-5' placeholder="Group Name" onChange={(e) => setName(e.target.value)} value={name}/>
+              <Input
+                type="text"
+                className="mt-5"
+                placeholder="Group Name"
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+              />
 
               <Button
                 onClick={() => handleCreateGroup(name)}
