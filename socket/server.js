@@ -1,15 +1,31 @@
-const express= require('express')
-const PORT = 5000
-const cors = require('cors')
-const connectDB = require('./config/db')
-const app = express()
-const dotenv = require("dotenv");
-const { initSocket } = require('./lib/socket')
-app.use(cors())
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const dotenv = require('dotenv');
+const { initSocket } = require('./lib/socket');
+const UserRouter = require('./routes/user');
+
 dotenv.config()
+
+const PORT = process.env.PORT || 5000
+const app = express()
+
+app.use(cors())
+
 connectDB()
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 const server = app.listen(PORT, () => {
-    console.log('Server running on http://localhost:5000');
+    console.log('Server running on http://localhost:' + PORT);
 });
-initSocket(server)
+// initSocket(server)
+
+app.use('/api/user', UserRouter)
+
+
+app.get('/', (req, res) => {
+    res.send('Server is running')
+})
 
