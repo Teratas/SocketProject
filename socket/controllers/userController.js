@@ -1,10 +1,13 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const userService = require("../services/userService");
-
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 class UserController {
   constructor() {
     console.log("UserController initialized");
+    this.envSecret = process.env.JWT_SECRET || 'secret';
     // const userService = new UserService();
     // this.userService = userService
   }
@@ -29,7 +32,8 @@ class UserController {
   }
 
   async getUser(req, res) {
-    const { username } = req.params;
+    const { username } = req.user;
+
     try {
       const user = await userService.getUser(username);
       if (!user) {
@@ -52,7 +56,10 @@ class UserController {
       if (!isMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      return res.status(200).json({ message: "Login successful" });
+      const token = jwt.sign({ username: user.username }, this.envSecret, {
+        expiresIn: "1h",
+      });
+      return res.status(200).json({ token });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error" });
     }
