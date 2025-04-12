@@ -7,7 +7,13 @@ import { signOut } from "next-auth/react";
 import CreateGroupCommand from "../components/CreateGroupCommand";
 import ShowChatCommand from "../components/ShowChatCommand";
 import { LogOut, SendHorizontal, Users } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 export interface stateInterface {
   success: boolean;
@@ -55,23 +61,23 @@ export default function MainPage() {
 
   useEffect(() => {
     const handleFetchAllGroupChat = async () => {
-      const userID = getCookie('id')
+      const userID = getCookie("id");
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/chats/getGroupMessageChat`,
         {
           userID: userID,
         },
         {
-          headers : {
-            bearer : token
-          }
+          headers: {
+            bearer: token,
+          },
         }
       );
       // console.log('res all group chat', res)
-      setAllGroupChat(res.data)
-    }
-    handleFetchAllGroupChat()
-  }, [])
+      setAllGroupChat(res.data);
+    };
+    handleFetchAllGroupChat();
+  }, []);
   const handleClickChat = async (index: number) => {
     const chat = chats[index];
     const messages = await axios.get(
@@ -87,7 +93,7 @@ export default function MainPage() {
 
     setCurrentMessage("");
     setChatState(index);
-    setAllChatState(-1)
+    setAllChatState(-1);
   };
   useEffect(() => {
     const handleUpdateChat = () => {
@@ -122,7 +128,6 @@ export default function MainPage() {
           },
         }
       );
-      console.log("resGetDirectMessageChat", res);
       setChats(res?.data?.chats);
     };
     const id = getCookie("id");
@@ -133,8 +138,13 @@ export default function MainPage() {
     }
   }, [refreshKey]);
   useEffect(() => {
-    const handleUserJoined = ({participants, chatID} : {participants : {_id : string, username : string}[] , chatID : string}) => {
-      console.log('ahsdjahsudhajksdhj')
+    const handleUserJoined = ({
+      participants,
+      chatID,
+    }: {
+      participants: { _id: string; username: string }[];
+      chatID: string;
+    }) => {
       setChats((prevChats) =>
         prevChats.map((chat) => {
           if (chat._id === chatID) {
@@ -147,13 +157,13 @@ export default function MainPage() {
         })
       );
     };
-  
-    socket?.on('user-joined', handleUserJoined);
-  
+
+    socket?.on("user-joined", handleUserJoined);
+
     return () => {
-      socket?.off('user-joined', handleUserJoined);
+      socket?.off("user-joined", handleUserJoined);
     };
-  }, [socket])
+  }, [socket]);
   useEffect(() => {
     const handleReceiveMessage = (message: messageInterface) => {
       if (
@@ -192,8 +202,10 @@ export default function MainPage() {
       // ) {
       //   setChatState((prev) => prev + 1);
       // }
-      if(chatState > -1){
-        const newChatState = chatsCopy.findIndex(chat => chat._id === chats[chatState]._id);
+      if (chatState > -1) {
+        const newChatState = chatsCopy.findIndex(
+          (chat) => chat._id === chats[chatState]._id
+        );
         setChatState(newChatState);
       }
     };
@@ -204,6 +216,7 @@ export default function MainPage() {
     };
   }, [chatState, chats, socket]);
   const token = getCookie("token") as string;
+  const [open, setOpen] = useState<boolean>(false);
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
@@ -239,6 +252,7 @@ export default function MainPage() {
       if (!res.data.success) {
         alert(res.data.message);
       }
+      else setOpen(false);
     }
   };
   const handleSendMessage = (
@@ -259,29 +273,35 @@ export default function MainPage() {
     setCurrentMessage("");
   };
   const handleJoinGroup = async () => {
-    const apiURL = `${process.env.NEXT_PUBLIC_BASE_URL}/chats/join-group-chat`
-    const chatID = allGroupChat[allChatState]._id
-    const userID = myUserId
+    const apiURL = `${process.env.NEXT_PUBLIC_BASE_URL}/chats/join-group-chat`;
+    const chatID = allGroupChat[allChatState]._id;
+    const userID = myUserId;
     const joinGroupData = {
       chatID,
-      userID
-    }
+      userID,
+    };
     const newGroupChatResponse = await axios.post(apiURL, joinGroupData, {
-      headers : {
-        bearer : token
-      }
-    })
-    console.log('newGroupChatResponse', newGroupChatResponse)
-    if(newGroupChatResponse.data.success){
-      const joinedChat = newGroupChatResponse.data && newGroupChatResponse.data.chat
-      setChats((prevState) => [joinedChat, ...prevState])
+      headers: {
+        bearer: token,
+      },
+    });
+    console.log("newGroupChatResponse", newGroupChatResponse);
+    if (newGroupChatResponse.data.success) {
+      const joinedChat =
+        newGroupChatResponse.data && newGroupChatResponse.data.chat;
+      setChats((prevState) => [joinedChat, ...prevState]);
 
-      const updatedAllGroupsChat = allGroupChat.filter(chat => chat._id !== chatID)
-      setAllGroupChat(updatedAllGroupsChat)
-      setAllChatState(-1)
-      socket?.emit('update-chat-member', {participants: joinedChat.participants, chatID : joinedChat._id})
+      const updatedAllGroupsChat = allGroupChat.filter(
+        (chat) => chat._id !== chatID
+      );
+      setAllGroupChat(updatedAllGroupsChat);
+      setAllChatState(-1);
+      socket?.emit("update-chat-member", {
+        participants: joinedChat.participants,
+        chatID: joinedChat._id,
+      });
     }
-  }
+  };
   return (
     <main className="text-white min-h-screen bg-black h-screen w-screen flex">
       <div className="border  m-5 bg-gray-700 border-gray-700 w-[20%] z-10 rounded-l-2xl ">
@@ -292,7 +312,8 @@ export default function MainPage() {
           <span>Message</span>
           <div className="w-[20%] ">
             <CreateGroupCommand
-              socket={socket}
+              open={open}
+              setOpen={setOpen}
               refreshKey={refreshKey}
               setRefreshKey={setRefreshKey}
               clickUserToCreateChat={clickUserToCreateChat}
@@ -312,36 +333,56 @@ export default function MainPage() {
           chats={chats}
         />
       </div>
-      <div className="w-[55%] bg-gray-700 rounded-r-2xl h-[96%] mt-5">
+      <div className="w-[55%] bg-gray-700 rounded-r-2xl h-[96%] mt-5 flex flex-col">
         {chatState === -1 &&
           allChatState > -1 &&
-          allGroupChat[allChatState] &&
-          <div className="flex flex-col h-full w-full ">
-            <div className='h-[50%] flex flex-col items-center justify-end gap-5'>
-              <Users size={200}/>
-              <span className='text-4xl'>Group : {allGroupChat[allChatState].name}</span>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <span className='text-blue-300 underline'>Members</span>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Members</DialogTitle>
-                  </DialogHeader>
-                  <div className='flex flex-col max-h-[200px] overflow-y-scroll' style={{msOverflowStyle : 'none', scrollbarWidth : 'none'}}>
-                      {
-                        allChatState !== -1 && allGroupChat[allChatState] && allGroupChat[allChatState].participants.map(participant => (
-                          <span key={participant._id}>{participant.username}</span>
-                        ))
-                      }
-                  </div>
-                </DialogContent>
-              </Dialog>
+          allGroupChat[allChatState] && (
+            <div className="flex flex-col h-full w-full">
+              <div className="flex-1 flex mt-50 flex-col items-center justify-end gap-5 overflow-auto">
+                <Users size={200} />
+                <span className="text-4xl">
+                  Group : {allGroupChat[allChatState].name}
+                </span>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <span className="text-blue-300 underline cursor-pointer">
+                      Members
+                    </span>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Members</DialogTitle>
+                    </DialogHeader>
+                    <div
+                      className="flex flex-col max-h-[200px] overflow-y-scroll"
+                      style={{
+                        msOverflowStyle: "none",
+                        scrollbarWidth: "none",
+                      }}
+                    >
+                      {allGroupChat[allChatState].participants.map(
+                        (participant) => (
+                          <span key={participant._id}>
+                            {participant.username}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="flex justify-center items-start py-6">
+                <Button
+                  onClick={handleJoinGroup}
+                  className="bg-gray-500 w-[50%] h-[50px] hover:bg-gray-300 hover:text-black"
+                >
+                  Join Group
+                </Button>
+              </div>
             </div>
-            <div className='h-[30%] justify-center flex items-start mt-15'>
-                <Button onClick={handleJoinGroup} className='bg-gray-500 w-[50%] h-[20%] hover:bg-gray-300 hover:text-black'>Join Group</Button>
-            </div>
-          </div>}
+          )}
+
         {chatState > -1 ? (
           <div className="flex flex-col h-full w-full ">
             <span className="w-full h-[10vh] text-4xl flex justify-center items-center bg-gray-700 border-b-2 border-gray-600">
@@ -426,7 +467,9 @@ export default function MainPage() {
                       handleSendMessage(
                         currentMessage,
                         myUserId,
-                        chats[chatState].participants[0]._id === myUserId
+                        chats[chatState].participants.length === 1
+                          ? myUserId
+                          : chats[chatState].participants[0]._id === myUserId
                           ? chats[chatState].participants[1]._id
                           : chats[chatState].participants[0]._id,
                         chats[chatState]._id,
@@ -446,7 +489,9 @@ export default function MainPage() {
                   handleSendMessage(
                     currentMessage,
                     myUserId,
-                    chats[chatState].participants[0]._id === myUserId
+                    chats[chatState].participants.length === 1
+                      ? myUserId
+                      : chats[chatState].participants[0]._id === myUserId
                       ? chats[chatState].participants[1]._id
                       : chats[chatState].participants[0]._id,
                     chats[chatState]._id,

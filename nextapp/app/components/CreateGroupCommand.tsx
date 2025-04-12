@@ -20,17 +20,20 @@ import { getCookie } from "cookies-next/client";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
+import { MessageSquareText, MessagesSquare } from "lucide-react";
 
 export default function CreateGroupCommand({
   clickUserToCreateChat,
   refreshKey,
   setRefreshKey,
-  socket,
+  open,
+  setOpen
 }: {
   clickUserToCreateChat: Function;
   refreshKey: boolean;
   setRefreshKey: Function;
-  socket: Socket | null;
+  open : boolean;
+  setOpen : any;
 }) {
   const [users, setUsers] = useState<Array<{ _id: string; username: string }>>(
     []
@@ -71,7 +74,7 @@ export default function CreateGroupCommand({
       return [...prevMembers, user];
     });
   };
-  const [open, setOpen] = useState<boolean>(false);
+  
 
   const handleCreateGroup = async (name: string) => {
     if (isCreating) return;
@@ -130,7 +133,7 @@ export default function CreateGroupCommand({
             >
               {users.map((user) => (
                 <CommandItem value={user.username} key={user._id}>
-                  <div className="flex w-full justify-between">
+                  <div className="flex w-full justify-between items-center">
                     <span className="text-white">{user.username}</span>
                     <div>
                       {isCreateGroup ? (
@@ -153,7 +156,7 @@ export default function CreateGroupCommand({
                           className="h-[30px]"
                           onClick={() => clickUserToCreateChat(user.username)}
                         >
-                          Direct Message
+                          <MessagesSquare/>
                         </Button>
                       )}
                     </div>
@@ -193,7 +196,7 @@ export default function CreateGroupCommand({
 
               <Button
                 onClick={() => handleCreateGroup(name)}
-                disabled={groupMember.length === 0 || !name}
+                disabled={!name}
                 className="w-full bg-lime-400 mt-5 text-white"
               >
                 Confirm
