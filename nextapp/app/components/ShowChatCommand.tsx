@@ -1,4 +1,5 @@
-import { CircleUserRound, SquareUserRound, User, Users } from "lucide-react";
+'use client'
+import { CircleUserRound, Lock, SquareUserRound, User, Users } from "lucide-react";
 import { chatInterface } from "../mainPage/page";
 import {
   Command,
@@ -9,19 +10,35 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Socket } from "socket.io-client";
+
 export default function ShowChatCommand({
   myUserId,
   chats,
   chatState,
   handleClickChat,
   socket,
+  setChatState,
+  allGroupChat,
+  setAllChatState,
+  allChatState
 }: {
   handleClickChat: Function;
   chatState: number;
   chats: chatInterface[];
   myUserId: string;
-  socket: Socket | null
+  socket: Socket | null;
+  setChatState : Function;
+  allGroupChat : chatInterface[];
+  setAllChatState : Function;
+  allChatState : number;
 }) {
+  
+  
+  const handleClickGroupChat = (index : number) => {
+    setChatState(-1)
+    setAllChatState(index)
+  }
+  
   return (
     <Command className="bg-gray-700 text-white h-[90%]">
       <CommandInput className="" placeholder="Type to search Chat" />
@@ -85,6 +102,32 @@ export default function ShowChatCommand({
                         </span>
                       </span>
                     </div>
+                  </div>
+                </div>
+              </CommandItem>
+            );
+          })}
+          {allGroupChat.map((data, index) => {
+            const chatName = data.name
+            return (
+              <CommandItem
+                value={chatName}
+                key={index}
+                className={`h-[80px] flex flex-col justify-around bg-gray-600 rounded-xl mx-5 my-2 hover:bg-sky-500 ${
+                  allChatState === index ? "bg-sky-500" : ""
+                } `}
+              >
+                <div
+                  onClick={() => handleClickGroupChat(index)}
+                  className="flex w-full h-full  justify-between items-center"
+                >
+                  <div className="flex items-center justify-center w-[20%] h-16">
+                    <Lock size={30} className="text-white size-10 " />
+                  </div>
+                  <div className="w-[80%]">
+                    <span className="font-bold text-2xl flex items-center">
+                      {`${chatName}`}
+                    </span>
                   </div>
                 </div>
               </CommandItem>

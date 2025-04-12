@@ -29,7 +29,47 @@ exports.getDirectMessageChat = async (req, res, next) => {
       chats,
     });
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.getGroupChat = async (req, res, next) => {
+  try {
+    const { userID } = req.body;
+    console.log('userID get Group Chat', userID)
+    const chats = await Chat.find({
+      participants: { $nin: [userID] },
+      isGroup: true
+    }).populate("participants", "username");
+
+    return res.status(200).json(chats);
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.joinGroupChat = async (req, res, next) => {
+  try {
+    const { chatID, userID } = req.body;
+
+    const groupChat = await Chat.findById(chatID);
+    if (!groupChat) {
+      return res.status(404).json({success: false, message: "Chat not found" });
+    }
+    const isJoined = groupChat.participants.some(participant =>
+      participant.equals(userID)
+    );
+
+    if (isJoined) {
+      return res.status(400).json({success: false, message: "User already in the group chat" });
+    }
+    groupChat.participants.push(userID);
+    await groupChat.save();
+    await groupChat.populate('participants', 'username')
+    return res.status(200).json({success: true, message: "User added to group chat", chat: groupChat });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({success: false, message: "Internal server error" });
   }
 };
 
@@ -121,6 +161,6 @@ exports.createChat = async (req, res, next) => {
       chat,
     });
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
