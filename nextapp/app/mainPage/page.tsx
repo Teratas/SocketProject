@@ -97,8 +97,46 @@ export default function MainPage() {
     setAllChatState(-1);
   };
   useEffect(() => {
-    const handleUpdateChat = () => {
-      setRefreshKey((prevKey) => !prevKey);
+    const handleUpdateChat = (chat: chatInterface) => {
+      console.log(0);
+      if (chat) {
+        const userID = getCookie("id") as string;
+        const username = getCookie("username") as string;
+        console.log(1);
+        console.log('received update-chat', chat)
+        console.log('user' , {username, _id: userID})
+        if (chat.participants.some((p) => p.username === username && p._id === userID)) {
+          console.log("2");
+          setChats((prevChats) => {
+            const index = prevChats.findIndex(
+              (oldChat) => oldChat._id === chat._id
+            );
+            if (index > -1) {
+              return [
+                ...prevChats.slice(0, index),
+                chat,
+                ...prevChats.slice(index + 1),
+              ];
+            } else {
+              return [...prevChats, chat];
+            }
+          });
+        }else{
+          console.log(3)
+          setAllGroupChat(prevGroupChats => {
+            const index = prevGroupChats.findIndex((oldGroup) => oldGroup._id === chat._id)
+            if(index > -1){
+              return [
+                ...prevGroupChats.slice(0, index),
+                chat,
+                ...prevGroupChats.slice(index + 1)
+              ]
+            }else{
+              return [...prevGroupChats, chat]
+            }
+          })
+        }
+      } else setRefreshKey((prevKey) => !prevKey);
     };
 
     socket?.on("update-chat", handleUpdateChat);
@@ -399,7 +437,7 @@ export default function MainPage() {
               {chats[chatState].isGroup && (
                 <ChangeGroupChatNameDialog
                   open={changeChatNameOpen}
-                  setOpen={setChangeChatNameOpen} 
+                  setOpen={setChangeChatNameOpen}
                   defaultName={chats[chatState].name}
                   chatID={chats[chatState]._id}
                   refreshKey={refreshKey}
