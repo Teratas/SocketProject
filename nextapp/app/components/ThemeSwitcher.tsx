@@ -27,31 +27,42 @@ export function ThemeSwitcher() {
       <DialogTrigger asChild>
         <Button
           className="h-10 w-10 rounded-full p-0 flex items-center justify-center"
-          variant="outline"
+          style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--background)",
+          }}
         >
           <Palette className="h-5 w-5" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        style={{
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)",
+        }}
+      >
         <DialogHeader>
-          <DialogTitle>Choose Theme</DialogTitle>
+          <DialogTitle style={{ color: "var(--foreground)" }}>
+            Choose Theme
+          </DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 pt-4">
           {Object.entries(themes).map(([key, theme]) => (
             <div
               key={key}
               className={`
-                p-4 rounded-xl cursor-pointer border-2 transition-all
-                ${
-                  currentTheme === key
-                    ? "border-blue-500 scale-105"
-                    : "border-gray-200 hover:border-gray-300"
-                }
+                p-4 rounded-xl cursor-pointer border-2 transition-all flex flex-col gap-2
+                ${currentTheme === key ? "scale-105" : "hover:border-gray-300"}
               `}
               style={{
                 backgroundColor: theme.background,
                 color: theme.foreground,
+                borderColor:
+                  currentTheme === key
+                    ? theme.primary
+                    : "rgba(128, 128, 128, 0.2)",
               }}
               onClick={() => handleThemeChange(key)}
             >
@@ -65,6 +76,18 @@ export function ThemeSwitcher() {
                   className="h-5 w-5 rounded-full"
                   style={{ backgroundColor: theme.secondary }}
                 ></div>
+                <div
+                  className="h-5 w-5 rounded-full"
+                  style={{ backgroundColor: theme.accent }}
+                ></div>
+              </div>
+              {/* Preview text in theme colors */}
+              <div className="mt-2 text-xs" style={{ color: theme.foreground }}>
+                Sample text
+              </div>
+              <div className="mt-1 text-xs flex gap-2">
+                <span style={{ color: theme.primary }}>Primary</span>
+                <span style={{ color: theme.secondary }}>Secondary</span>
               </div>
             </div>
           ))}

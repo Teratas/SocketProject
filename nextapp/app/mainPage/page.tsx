@@ -382,7 +382,14 @@ export default function MainPage() {
               <div className="flex justify-center items-start py-6">
                 <Button
                   onClick={handleJoinGroup}
-                  className="bg-gray-500 w-[50%] h-[50px] hover:bg-gray-300 hover:text-black"
+                  className="w-[50%] h-[50px]"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    color: "var(--background)",
+                    ":hover": {
+                      backgroundColor: "var(--secondary)",
+                    },
+                  }}
                 >
                   Join Group
                 </Button>
@@ -430,10 +437,17 @@ export default function MainPage() {
                       <div
                         className={`${
                           isISent ? "order-2" : ""
-                        } px-5 text-2xl bg-blue-500 rounded-2xl  break-words whitespace-normal max-w-[500px] max-h-[400px]`}
+                        } px-5 text-2xl rounded-2xl break-words whitespace-normal max-w-[500px] max-h-[400px]`}
+                        style={{
+                          backgroundColor: isISent
+                            ? "var(--primary)"
+                            : "var(--secondary)",
+                          color: "var(--background)",
+                        }}
                       >
                         {message.message}
                       </div>
+
                       <span
                         className={`text-xs flex items-end ${
                           isISent ? "order-1 mr-2" : "ml-2"
@@ -488,6 +502,11 @@ export default function MainPage() {
                 type="text"
                 placeholder="Send a message"
                 className="w-[80%] h-[80%] text-2xl px-5 focus-visible:outline-0"
+                style={{
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                  border: "1px solid var(--primary)",
+                }}
               />
               <button
                 type="button"
@@ -505,7 +524,11 @@ export default function MainPage() {
                     chats[chatState].isGroup
                   )
                 }
-                className="bg-blue-500 flex justify-center items-center w-[10%] h-[100%] rounded-2xl"
+                className="flex justify-center items-center w-[10%] h-[100%] rounded-2xl"
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--background)",
+                }}
               >
                 <SendHorizontal size={40} />
               </button>
