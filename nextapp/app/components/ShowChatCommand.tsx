@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 'use client'
 import { CircleUserRound, Lock, Users } from "lucide-react";
 import { chatInterface } from "../mainPage/page";
