@@ -1,9 +1,10 @@
-'use client'
+// แก้ไขไฟล์ nextapp/app/components/Home.tsx
+"use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { signIn } from "next-auth/react";
-import { getCookie } from 'cookies-next/client';
+import { getCookie } from "cookies-next/client";
 import { useForm } from "react-hook-form";
 import {
   Card,
@@ -25,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { z } from 'zod';
+import { z } from "zod";
 import Link from "next/link";
 
 // Schemas
@@ -96,13 +97,16 @@ export default function HomeComponent() {
     };
 
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`, params);
-      console.log('res', res)
-      if (res.data.status === 'error') {
-        alert('Failed to sign up');
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`,
+        params
+      );
+      console.log("res", res);
+      if (res.data.status === "error") {
+        alert("Failed to sign up");
       } else {
         formRegister.reset();
-        alert('Successfully registered!');
+        alert("Successfully registered!");
         setIsLogin(true);
       }
     } catch (err) {
@@ -119,7 +123,7 @@ export default function HomeComponent() {
     });
 
     if (loginRes?.ok) {
-      const id = getCookie('id');
+      const id = getCookie("id");
       const userData = {
         socketID: socket?.id,
         username: data.username,
@@ -133,13 +137,47 @@ export default function HomeComponent() {
     }
   };
 
+  // กำหนดสไตล์แบบ hard-coded สำหรับ login/signup
+  const fixedStyles = {
+    card: {
+      background: "#f3f4f6", // สีพื้นหลังคงที่
+      color: "#171717", // สีข้อความคงที่
+      borderRadius: "10px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    },
+    title: {
+      color: "#171717", // สีของหัวข้อคงที่
+      fontWeight: 600,
+    },
+    input: {
+      background: "#ffffff",
+      color: "#171717",
+      border: "1px solid #d1d5db",
+    },
+    button: {
+      background: "#3b82f6", // สีปุ่มคงที่
+      color: "#ffffff",
+      fontWeight: 500,
+    },
+    link: {
+      color: "#3b82f6",
+      cursor: "pointer",
+    },
+  };
+
   return (
     <>
       {isLogin ? (
-        <Card className="bg-gray-200 w-[500px] h-[350px] flex flex-col">
+        <Card
+          style={fixedStyles.card}
+          className="w-[500px] h-[350px] flex flex-col"
+        >
           <CardHeader>
-            <CardTitle className="flex items-center flex-col">
-              <span className='mt-5 md:mt-0'>Login</span>
+            <CardTitle
+              style={fixedStyles.title}
+              className="flex items-center flex-col"
+            >
+              <span className="mt-5 md:mt-0">Login</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -154,9 +192,15 @@ export default function HomeComponent() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel style={{ color: "#171717" }}>
+                          Username
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="text" />
+                          <Input
+                            style={fixedStyles.input}
+                            {...field}
+                            type="text"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -167,15 +211,25 @@ export default function HomeComponent() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel style={{ color: "#171717" }}>
+                          Password
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="password" />
+                          <Input
+                            style={fixedStyles.input}
+                            {...field}
+                            type="password"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w- md:w-[25%]">
+                  <Button
+                    type="submit"
+                    style={fixedStyles.button}
+                    className="w-30 md:w-[25%]"
+                  >
                     Login
                   </Button>
                 </form>
@@ -183,18 +237,31 @@ export default function HomeComponent() {
             </fieldset>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <div className="text-muted-foreground text-sm flex">
+            <div
+              className="text-muted-foreground text-sm flex"
+              style={{ color: "#4b5563" }}
+            >
               Don't have an account?{" "}
-              <div onClick={() => setIsLogin(false)} className="ml-1 underline cursor-pointer">
+              <div
+                onClick={() => setIsLogin(false)}
+                style={fixedStyles.link}
+                className="ml-1 underline"
+              >
                 Register
               </div>
             </div>
           </CardFooter>
         </Card>
       ) : (
-        <Card className="bg-gray-200 w-[500px] h-auto flex flex-col">
+        <Card
+          style={fixedStyles.card}
+          className="w-[500px] h-auto flex flex-col"
+        >
           <CardHeader>
-            <CardTitle className="flex justify-center">
+            <CardTitle
+              style={fixedStyles.title}
+              className="flex justify-center"
+            >
               <span className="mt-2">Sign up</span>
             </CardTitle>
           </CardHeader>
@@ -210,9 +277,15 @@ export default function HomeComponent() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel style={{ color: "#171717" }}>
+                          Username
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="text" />
+                          <Input
+                            style={fixedStyles.input}
+                            {...field}
+                            type="text"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -223,9 +296,15 @@ export default function HomeComponent() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel style={{ color: "#171717" }}>
+                          Password
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="password" />
+                          <Input
+                            style={fixedStyles.input}
+                            {...field}
+                            type="password"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -236,24 +315,43 @@ export default function HomeComponent() {
                     control={formRegister.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
+                        <FormLabel style={{ color: "#171717" }}>
+                          Confirm Password
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} type="password" />
+                          <Input
+                            style={fixedStyles.input}
+                            {...field}
+                            type="password"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <Button className="w-[25%]" type="submit">Register</Button>
+
+                  <Button
+                    style={fixedStyles.button}
+                    className="w-[25%]"
+                    type="submit"
+                  >
+                    Register
+                  </Button>
                 </fieldset>
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <div className="text-muted-foreground text-sm flex">
+            <div
+              className="text-muted-foreground text-sm flex"
+              style={{ color: "#4b5563" }}
+            >
               Already have an account?{" "}
-              <div onClick={() => setIsLogin(true)} className="ml-1 underline cursor-pointer">
+              <div
+                onClick={() => setIsLogin(true)}
+                style={fixedStyles.link}
+                className="ml-1 underline"
+              >
                 Login
               </div>
             </div>
