@@ -100,3 +100,7 @@ select:focus {
 .send-button:hover {
   background-color: var(--secondary);
 }
+
+.join-group-button:hover {
+  background-color: var(--secondary);
+}
