@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import ChangeGroupChatNameDialog from "../components/ChangeGroupChatNameDialog";
 export interface stateInterface {
   success: boolean;
   msg: string;
@@ -217,6 +218,7 @@ export default function MainPage() {
   }, [chatState, chats, socket]);
   const token = getCookie("token") as string;
   const [open, setOpen] = useState<boolean>(false);
+  const [changeChatNameOpen, setChangeChatNameOpen] = useState<boolean>(false);
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
@@ -251,8 +253,7 @@ export default function MainPage() {
       console.log("res create chat", res);
       if (!res.data.success) {
         alert(res.data.message);
-      }
-      else setOpen(false);
+      } else setOpen(false);
     }
   };
   const handleSendMessage = (
@@ -385,15 +386,27 @@ export default function MainPage() {
 
         {chatState > -1 ? (
           <div className="flex flex-col h-full w-full ">
-            <span className="w-full h-[10vh] text-4xl flex justify-center items-center bg-gray-700 border-b-2 border-gray-600">
-              {chatState > -1 &&
-                chats[chatState] &&
-                (chats[chatState].isGroup
-                  ? `${chats[chatState].name}(${chats[chatState].participants.length})`
-                  : chats[chatState].participants[0]._id === myUserId
-                  ? chats[chatState].participants[1].username
-                  : chats[chatState].participants[0].username)}
-            </span>
+            <div className="flex flex-row border-b-2 bg-gray-700  border-gray-600">
+              <span className="w-full h-[10vh] text-4xl flex justify-center items-center">
+                {chatState > -1 &&
+                  chats[chatState] &&
+                  (chats[chatState].isGroup
+                    ? `${chats[chatState].name}(${chats[chatState].participants.length})`
+                    : chats[chatState].participants[0]._id === myUserId
+                    ? chats[chatState].participants[1].username
+                    : chats[chatState].participants[0].username)}
+              </span>
+              {chats[chatState].isGroup && (
+                <ChangeGroupChatNameDialog
+                  open={changeChatNameOpen}
+                  setOpen={setChangeChatNameOpen} 
+                  defaultName={chats[chatState].name}
+                  chatID={chats[chatState]._id}
+                  refreshKey={refreshKey}
+                  setRefreshKey={setRefreshKey}
+                />
+              )}
+            </div>
             <div
               className="h-[80%] overflow-y-scroll p-5 bg-gray-700 flex flex-col"
               style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
