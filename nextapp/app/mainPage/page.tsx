@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ChangeGroupChatNameDialog from "../components/ChangeGroupChatNameDialog";
+import UnsendMessageDialog from "../components/UnsendMessageDialog";
 export interface stateInterface {
   success: boolean;
   msg: string;
@@ -36,12 +37,19 @@ export interface chatInterface {
   lastMessage: string;
   lastMessageAt: string;
 }
+export enum MessageType {
+  USER = "user",
+  STATUS = "status"
+}
 export interface messageInterface {
+  _id: string;
   chatId: string;
   sender: { username: string; _id: string };
   receiver: { username: string; _id: string };
   message: string;
   isGroup: boolean;
+  isUnsent: boolean;
+  type: MessageType;
   timestamp: string;
 }
 export default function MainPage() {
@@ -254,9 +262,36 @@ export default function MainPage() {
       socket?.off("receive-message", handleReceiveMessage);
     };
   }, [chatState, chats, socket]);
+
+  useEffect(() => {
+    const handleUnsendMessage = ({message, messageId} : {message: messageInterface; messageId: string}) => {
+      console.log("Unsend Message Socket is turn on!")
+      console.log("Current Chat + id",chats[chatState],chats[chatState]._id)
+      console.log("Message's Chat", message.chatId,messageId)
+      if (chatState > -1 && chats[chatState] && message.chatId === chats[chatState]._id) {
+        // Update the specific message in the current chat messages
+        currentChatMessages.forEach((prevState)=> console.log(prevState))
+        setCurrentChatMessages((prevState) =>
+          prevState.map((msg) =>
+            msg._id === messageId
+              ? { ...msg, message: message.message, isUnsent: true }
+              : msg
+          )
+        );
+      }
+    };
+    console.log("Turn On Unsend Message Socket")
+    socket?.on("unsend-message", handleUnsendMessage);
+    return () => {
+      socket?.off("unsend-message", handleUnsendMessage);
+    };
+  }, [socket]);
+
   const token = getCookie("token") as string;
   const [open, setOpen] = useState<boolean>(false);
   const [changeChatNameOpen, setChangeChatNameOpen] = useState<boolean>(false);
+  const [unsendMessageOpen, setUnsendMessageOpen] = useState<boolean>(false)
+  const [unsendMessage, setUnsendMessage] = useState<any>({});
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
@@ -299,7 +334,8 @@ export default function MainPage() {
     sender: string,
     receiver: string,
     chatId: string,
-    isGroup: boolean
+    isGroup: boolean,
+    type: MessageType
   ) => {
     const messageData = {
       message,
@@ -307,10 +343,13 @@ export default function MainPage() {
       receiver,
       chatId,
       isGroup: isGroup,
+      type
     };
+    console.log(messageData)
     socket?.emit("direct-message", messageData);
-    setCurrentMessage("");
+    if (type === MessageType.USER) setCurrentMessage("");
   };
+
   const handleJoinGroup = async () => {
     const apiURL = `${process.env.NEXT_PUBLIC_BASE_URL}/chats/join-group-chat`;
     const chatID = allGroupChat[allChatState]._id;
@@ -438,10 +477,11 @@ export default function MainPage() {
                 <ChangeGroupChatNameDialog
                   open={changeChatNameOpen}
                   setOpen={setChangeChatNameOpen}
-                  defaultName={chats[chatState].name}
-                  chatID={chats[chatState]._id}
+                  currentName={chats[chatState].name}
+                  chat={chats[chatState]}
                   refreshKey={refreshKey}
                   setRefreshKey={setRefreshKey}
+                  handleStatusMessage = {handleSendMessage}
                 />
               )}
             </div>
@@ -449,12 +489,17 @@ export default function MainPage() {
               className="h-[80%] overflow-y-scroll p-5 bg-gray-700 flex flex-col"
               style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
             >
+              {<UnsendMessageDialog open={unsendMessageOpen} setOpen={setUnsendMessageOpen} message={unsendMessage} refreshKey={refreshKey} setRefreshKey={setRefreshKey}/>}
               {currentChatMessages.map((message, index) => {
                 const isISent = message.sender._id === myUserId;
                 return (
                   <div
                     className={`flex flex-col mt-5 mb-3 ${
-                      isISent ? "self-end mr-5" : "self-start ml-5"
+                      message.type !== MessageType.STATUS && isISent ? 
+                        message.isUnsent  
+                        ? "self-end mr-5":
+                          "self-end mr-5 cursor-pointer" 
+                      : "self-start ml-5"
                     }`}
                     key={index}
                     ref={
@@ -462,6 +507,15 @@ export default function MainPage() {
                         ? currentMessageRef
                         : null
                     }
+                    onClick={()=>{
+                      console.log(message)
+                      if (isISent && !message.isUnsent && message.type === MessageType.USER) 
+                      {
+                        setUnsendMessage(message)
+                        setUnsendMessageOpen(true)
+                      }
+                    }
+                  }
                   >
                     <span
                       className={`text-xl ${
@@ -498,9 +552,9 @@ export default function MainPage() {
             </div>
             {chats[chatState] && chats[chatState].isGroup && (
               <div className="w-full justify-center flex text-gray-300 ">
-                <span>Members :</span>
+                <span className="mr-0.5">Members: </span>
                 {chats[chatState].participants.map((participant, index) => (
-                  <span key={index}>{`${participant.username} ${
+                  <span key={index} className="mr-0.5">{`${participant.username}${
                     index == chats[chatState].participants.length - 1
                       ? ""
                       : ", "
@@ -524,7 +578,8 @@ export default function MainPage() {
                           ? chats[chatState].participants[1]._id
                           : chats[chatState].participants[0]._id,
                         chats[chatState]._id,
-                        chats[chatState].isGroup
+                        chats[chatState].isGroup,
+                        MessageType.USER
                       );
                   }
                 }}
@@ -546,7 +601,8 @@ export default function MainPage() {
                       ? chats[chatState].participants[1]._id
                       : chats[chatState].participants[0]._id,
                     chats[chatState]._id,
-                    chats[chatState].isGroup
+                    chats[chatState].isGroup,
+                    MessageType.USER
                   )
                 }
                 className="bg-blue-500 flex justify-center items-center w-[10%] h-[100%] rounded-2xl"
