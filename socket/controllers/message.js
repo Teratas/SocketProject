@@ -68,27 +68,27 @@ exports.unsendMessage = async (req, res, next) => {
     const socket = require("../lib/socket");
     const io = socket.getIO();
     console.log(connectedPeer);
+    console.log('mressage', message)
     if (!message.isGroup) {
-      if (Object.keys(connectedPeer).includes(message.sender)) {
-        const senderSocketID = connectedPeer[message.sender].socketID;
-        io.to(senderSocketID).emit("unsend-message", {
-          message: unsentMessage,
-          messageId: messageID,
-        });
+      
+      if (connectedPeer[message.sender.toString()]) {
+        console.log('test1')
+        const senderSocketID = connectedPeer[message.sender.toString()].socketID;
+        io.to(senderSocketID).emit("unsend-message", message);
       }
-      if (Object.keys(connectedPeer).includes(message.receiver)) {
-        const receiverSocketID = connectedPeer[message.receiver].socketID;
-        io.to(receiverSocketID).emit("unsend-message", {
-          message: unsentMessage,
-          messageId: messageID,
-        });
+      if (connectedPeer[message.receiver.toString()]) {
+        const receiverSocketID = connectedPeer[message.receiver.toString()].socketID;
+        io.to(receiverSocketID).emit("unsend-message", message);
       }
     } else {
-      io.to(message.chatId).emit("unsend-message", message);
-      console.log("emit to group chat");
+      io.to(message.chatId.toString()).emit("unsend-message", message);
+      console.log("emit to group chat", message.chatId);
     }
-
-    console.log("Unsent Message, now:", message);
+    
+    console.log("Unsent Message, now:", {
+            message: unsentMessage,
+            messageId: messageID,
+          });
 
     res.status(200).json({
       success: true,

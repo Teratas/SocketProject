@@ -49,7 +49,6 @@ const getSocket = (server) => {
       console.log("data , ",data)
       io.to(data.chatID).emit("user-joined", {participants : data.participants,chatID : data.chatID})
     })
-    
     socket.on('direct-message', async (data) => { // data : {chatId, sender, receiver, message} ให้ส่งไปหา client แล้ว client check จาก currentChat ว่าเปิดอยู่ไหมหาก chatID ตรงกันให้หรับไม่ใช่ช่างแม่งเพราะเพื่อ click ไปที่ chat แล้วจะ fetch มาเสมอ
       const {chatId, sender, receiver, message, isGroup, type} = data
 

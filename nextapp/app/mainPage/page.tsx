@@ -264,20 +264,19 @@ export default function MainPage() {
   }, [chatState, chats, socket]);
 
   useEffect(() => {
-    const handleUnsendMessage = ({message, messageId} : {message: messageInterface; messageId: string}) => {
-      console.log("Unsend Message Socket is turn on!")
-      console.log("Current Chat + id",chats[chatState],chats[chatState]._id)
-      console.log("Message's Chat", message.chatId,messageId)
-      if (chatState > -1 && chats[chatState] && message.chatId === chats[chatState]._id) {
-        // Update the specific message in the current chat messages
-        currentChatMessages.forEach((prevState)=> console.log(prevState))
-        setCurrentChatMessages((prevState) =>
-          prevState.map((msg) =>
-            msg._id === messageId
-              ? { ...msg, message: message.message, isUnsent: true }
-              : msg
-          )
-        );
+    const handleUnsendMessage = (message : messageInterface) => {
+      console.log('unsend1')
+      const chatIndex = chats.findIndex(chat => chat._id === message.chatId)
+      if(message && chatIndex === chatState){
+        setCurrentChatMessages(prevState => {
+          const messageIndex = prevState.findIndex(prevMessage => prevMessage._id === message._id)
+
+          return [
+            ...prevState.slice(0, messageIndex),
+            message,
+            ...prevState.slice(messageIndex + 1)
+          ];
+        })
       }
     };
     console.log("Turn On Unsend Message Socket")
@@ -285,7 +284,7 @@ export default function MainPage() {
     return () => {
       socket?.off("unsend-message", handleUnsendMessage);
     };
-  }, [socket]);
+  }, [socket, chats]);
 
   const token = getCookie("token") as string;
   const [open, setOpen] = useState<boolean>(false);
