@@ -1,5 +1,5 @@
 'use client'
-import { CircleUserRound, Lock, SquareUserRound, User, Users } from "lucide-react";
+import { CircleUserRound, Lock, Users } from "lucide-react";
 import { chatInterface } from "../mainPage/page";
 import {
   Command,
@@ -10,6 +10,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Socket } from "socket.io-client";
+import { Dispatch, SetStateAction } from "react";
 
 export default function ShowChatCommand({
   myUserId,
@@ -22,14 +23,14 @@ export default function ShowChatCommand({
   setAllChatState,
   allChatState
 }: {
-  handleClickChat: Function;
+  handleClickChat: (index: number) => Promise<void>;
   chatState: number;
   chats: chatInterface[];
   myUserId: string;
   socket: Socket | null;
-  setChatState : Function;
+  setChatState : Dispatch<SetStateAction<number>>;
   allGroupChat : chatInterface[];
-  setAllChatState : Function;
+  setAllChatState : Dispatch<SetStateAction<number>>;
   allChatState : number;
 }) {
   

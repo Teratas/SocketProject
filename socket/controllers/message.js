@@ -55,29 +55,24 @@ exports.unsendMessage = async (req, res, next) => {
     message.isUnsent = true;
     await message.save();
 
-    const unsentMessage = new Message({
-      chatId: message.chatId,
-      sender: message.sender,
-      receiver: message.receiver,
-      message: message.message,
-      isGroup: message.isGroup,
-      isUnsent: message.isUnsent,
-      type: message.type,
-      timestamp: message.timestamp,
-    });
+    await message.populate([
+      { path: 'sender', select: 'username' },
+      { path: 'receiver', select: 'username' }
+    ]);
+    console.log("After Populate",message)
     const socket = require("../lib/socket");
     const io = socket.getIO();
     console.log(connectedPeer);
     console.log('mressage', message)
     if (!message.isGroup) {
       
-      if (connectedPeer[message.sender.toString()]) {
+      if (connectedPeer[message.sender._id.toString()]) {
         console.log('test1')
-        const senderSocketID = connectedPeer[message.sender.toString()].socketID;
+        const senderSocketID = connectedPeer[message.sender._id.toString()].socketID;
         io.to(senderSocketID).emit("unsend-message", message);
       }
-      if (connectedPeer[message.receiver.toString()]) {
-        const receiverSocketID = connectedPeer[message.receiver.toString()].socketID;
+      if (connectedPeer[message.receiver._id.toString()]) {
+        const receiverSocketID = connectedPeer[message.receiver._id.toString()].socketID;
         io.to(receiverSocketID).emit("unsend-message", message);
       }
     } else {
@@ -86,7 +81,7 @@ exports.unsendMessage = async (req, res, next) => {
     }
     
     console.log("Unsent Message, now:", {
-            message: unsentMessage,
+            message: message,
             messageId: messageID,
           });
 

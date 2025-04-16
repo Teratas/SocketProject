@@ -2,10 +2,11 @@
 import { auth } from "@/auth";
 import HomeComponent from "./components/Home";
 import { redirect } from "next/navigation";
+import { Session } from "next-auth";
 
 export default async function Home() {
-  const session : any = await auth()
-  if(session?.id){
+  const session : Session | null = await auth()
+  if(session && session.user! && session.user.id!){
     redirect('/mainPage')
   }
   return (

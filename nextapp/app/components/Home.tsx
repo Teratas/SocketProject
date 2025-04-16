@@ -1,14 +1,13 @@
-'use client'
+"use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSocket } from "./SocketProvider";
 import { signIn } from "next-auth/react";
-import { getCookie } from 'cookies-next/client';
+import { getCookie } from "cookies-next/client";
 import { useForm } from "react-hook-form";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -25,8 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { z } from 'zod';
-import Link from "next/link";
+import { z } from "zod";
 
 // Schemas
 const formSchema = z.object({
@@ -96,13 +94,16 @@ export default function HomeComponent() {
     };
 
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`, params);
-      console.log('res', res)
-      if (res.data.status === 'error') {
-        alert('Failed to sign up');
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`,
+        params
+      );
+      console.log("res", res);
+      if (res.data.status === "error") {
+        alert("Failed to sign up");
       } else {
         formRegister.reset();
-        alert('Successfully registered!');
+        alert("Successfully registered!");
         setIsLogin(true);
       }
     } catch (err) {
@@ -119,7 +120,7 @@ export default function HomeComponent() {
     });
 
     if (loginRes?.ok) {
-      const id = getCookie('id');
+      const id = getCookie("id");
       const userData = {
         socketID: socket?.id,
         username: data.username,
@@ -139,7 +140,7 @@ export default function HomeComponent() {
         <Card className="bg-gray-200 w-[500px] h-[350px] flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center flex-col">
-              <span className='mt-5 md:mt-0'>Login</span>
+              <span className="mt-5 md:mt-0">Login</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -184,8 +185,11 @@ export default function HomeComponent() {
           </CardContent>
           <CardFooter className="flex flex-col">
             <div className="text-muted-foreground text-sm flex">
-              Don't have an account?{" "}
-              <div onClick={() => setIsLogin(false)} className="ml-1 underline cursor-pointer">
+              Don&#39;t have an account?{" "}
+              <div
+                onClick={() => setIsLogin(false)}
+                className="ml-1 underline cursor-pointer"
+              >
                 Register
               </div>
             </div>
@@ -244,8 +248,10 @@ export default function HomeComponent() {
                       </FormItem>
                     )}
                   />
-                  
-                  <Button className="w-[25%]" type="submit">Register</Button>
+
+                  <Button className="w-[25%]" type="submit">
+                    Register
+                  </Button>
                 </fieldset>
               </form>
             </Form>
@@ -253,7 +259,10 @@ export default function HomeComponent() {
           <CardFooter className="flex flex-col">
             <div className="text-muted-foreground text-sm flex">
               Already have an account?{" "}
-              <div onClick={() => setIsLogin(true)} className="ml-1 underline cursor-pointer">
+              <div
+                onClick={() => setIsLogin(true)}
+                className="ml-1 underline cursor-pointer"
+              >
                 Login
               </div>
             </div>

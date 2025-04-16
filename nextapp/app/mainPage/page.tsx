@@ -37,10 +37,6 @@ export interface chatInterface {
   lastMessage: string;
   lastMessageAt: string;
 }
-export enum MessageType {
-  USER = "user",
-  STATUS = "status"
-}
 export interface messageInterface {
   _id: string;
   chatId: string;
@@ -49,7 +45,7 @@ export interface messageInterface {
   message: string;
   isGroup: boolean;
   isUnsent: boolean;
-  type: MessageType;
+  type: string;
   timestamp: string;
 }
 export default function MainPage() {
@@ -267,6 +263,7 @@ export default function MainPage() {
     const handleUnsendMessage = (message : messageInterface) => {
       console.log('unsend1')
       const chatIndex = chats.findIndex(chat => chat._id === message.chatId)
+      console.log(chatIndex)
       if(message && chatIndex === chatState){
         setCurrentChatMessages(prevState => {
           const messageIndex = prevState.findIndex(prevMessage => prevMessage._id === message._id)
@@ -290,7 +287,17 @@ export default function MainPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [changeChatNameOpen, setChangeChatNameOpen] = useState<boolean>(false);
   const [unsendMessageOpen, setUnsendMessageOpen] = useState<boolean>(false)
-  const [unsendMessage, setUnsendMessage] = useState<any>({});
+  const [unsendMessage, setUnsendMessage] = useState<messageInterface>({
+      _id: "",
+    chatId: "",
+    sender: { username: "", _id: "" },
+    receiver: { username: "", _id: "" },
+    message: "",
+    isGroup: false,
+    isUnsent: false,
+    type: "user",
+    timestamp: ""
+  });
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
@@ -334,7 +341,7 @@ export default function MainPage() {
     receiver: string,
     chatId: string,
     isGroup: boolean,
-    type: MessageType
+    type: string
   ) => {
     const messageData = {
       message,
@@ -346,7 +353,7 @@ export default function MainPage() {
     };
     console.log(messageData)
     socket?.emit("direct-message", messageData);
-    if (type === MessageType.USER) setCurrentMessage("");
+    if (type === 'user') setCurrentMessage("");
   };
 
   const handleJoinGroup = async () => {
@@ -494,8 +501,8 @@ export default function MainPage() {
                 return (
                   <div
                     className={`flex flex-col mt-5 mb-3 ${
-                      message.type !== MessageType.STATUS && isISent ? 
-                        message.isUnsent  
+                      isISent && message.type !== 'status' ? 
+                        message.isUnsent
                         ? "self-end mr-5":
                           "self-end mr-5 cursor-pointer" 
                       : "self-start ml-5"
@@ -508,7 +515,7 @@ export default function MainPage() {
                     }
                     onClick={()=>{
                       console.log(message)
-                      if (isISent && !message.isUnsent && message.type === MessageType.USER) 
+                      if (isISent && !message.isUnsent && message.type === 'user') 
                       {
                         setUnsendMessage(message)
                         setUnsendMessageOpen(true)
@@ -567,7 +574,7 @@ export default function MainPage() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    chats[chatState] &&
+                    if (chats[chatState])
                       handleSendMessage(
                         currentMessage,
                         myUserId,
@@ -578,10 +585,11 @@ export default function MainPage() {
                           : chats[chatState].participants[0]._id,
                         chats[chatState]._id,
                         chats[chatState].isGroup,
-                        MessageType.USER
+                        'user'
                       );
+                    }
                   }
-                }}
+                }
                 value={currentMessage}
                 type="text"
                 placeholder="Send a message"
@@ -601,7 +609,7 @@ export default function MainPage() {
                       : chats[chatState].participants[0]._id,
                     chats[chatState]._id,
                     chats[chatState].isGroup,
-                    MessageType.USER
+                    'user'
                   )
                 }
                 className="bg-blue-500 flex justify-center items-center w-[10%] h-[100%] rounded-2xl"

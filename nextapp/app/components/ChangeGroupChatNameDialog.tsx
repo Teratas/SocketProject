@@ -10,16 +10,21 @@ import {
   } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { getCookie } from "cookies-next/client";
-import { MessageType } from "../mainPage/page";
+import { chatInterface } from "../mainPage/page";
 
 
 
 export default function ChangeGroupChatNameDialog({open, setOpen, currentName, chat, refreshKey, setRefreshKey, handleStatusMessage}
   :
-  { open: boolean, setOpen : any, currentName: string, chat: any, refreshKey: boolean;
-    setRefreshKey: Function; handleStatusMessage: Function}) {
+  { open: boolean, setOpen : Dispatch<SetStateAction<boolean>>, currentName: string, chat: chatInterface, refreshKey: boolean;
+    setRefreshKey: Dispatch<SetStateAction<boolean>>; handleStatusMessage: (message: string,
+      sender: string,
+      receiver: string,
+      chatId: string,
+      isGroup: boolean,
+      type: string)=>(void)}) {
   const [name, setName] = useState<string>(currentName);
   const [isChanging, setIsChanging] = useState(false);
   const token = getCookie("token");
@@ -27,11 +32,10 @@ export default function ChangeGroupChatNameDialog({open, setOpen, currentName, c
   const handleChangeGroupName = async (name: string) => {
     if (isChanging) return;
     setIsChanging(true);
-    console.log(chat.participantsUsername)
     try {
       const changeGroupNamedata = {
         chatID: chat._id,
-        userID: userId,
+        userID: userId!.toString(),
         newName: name
       };
 
@@ -51,11 +55,11 @@ export default function ChangeGroupChatNameDialog({open, setOpen, currentName, c
       }
 
       console.log("chat res", response);
-      handleStatusMessage(`${currentName} has been changed to ${name}`, userId, chat.participants[0]._id === userId
+      handleStatusMessage(`${currentName} has been changed to ${name}`, userId!.toString(), chat.participants[0]._id === userId
         ? chat.participants[1]._id
         : chat._id,
       chat._id,
-      chat.isGroup, MessageType.STATUS)
+      chat.isGroup, "status")
       setOpen(false);
       setRefreshKey(!refreshKey)
       setName(name)
@@ -84,6 +88,15 @@ export default function ChangeGroupChatNameDialog({open, setOpen, currentName, c
                 className="my-5"
                 placeholder={currentName}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter"){
+                    e.preventDefault()
+                    if (name !== currentName) {
+                      handleChangeGroupName(name)
+                    }
+                  }
+                }
+              }
                 value={name}
               />
             <Button className="bg-gray-500 border-gray-500"

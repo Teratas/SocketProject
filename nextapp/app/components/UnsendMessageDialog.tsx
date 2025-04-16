@@ -6,20 +6,19 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogClose
+    DialogTrigger
   } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { getCookie } from "cookies-next/client";
+import { messageInterface } from "../mainPage/page";
 
 
 
 export default function UnsendMessageDialog({open, setOpen, message, refreshKey, setRefreshKey}
   :
-  { open: boolean, setOpen : any, message: any, refreshKey: boolean;
-    setRefreshKey: Function}) {
+  { open: boolean, setOpen : Dispatch<SetStateAction<boolean>>, message: messageInterface, refreshKey: boolean;
+    setRefreshKey: Dispatch<SetStateAction<boolean>>}) {
   const [isChanging, setIsChanging] = useState(false);
   const token = getCookie("token");
   const userId = getCookie("id");
