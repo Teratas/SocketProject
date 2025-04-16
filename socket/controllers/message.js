@@ -44,11 +44,18 @@ exports.unsendMessage = async (req, res, next) => {
         message: "Message not found",
       });
     }
-    if (message.sender._id.toString() != userID) {
+    if (message.sender._id.toString() != userID || message.type !== 'user') {
       return res.status(403).json({
         success: false,
-        message: "You can only unsend your messages.",
+        message: "You can only unsend your manually inputted messages.",
       });
+    }
+
+    if (message.isUnsent) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot unsend a message that has been unsent."
+      })
     }
 
     message.message = "This message has been unsent by the user.";
