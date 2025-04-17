@@ -8,6 +8,8 @@ const chatSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   }],
+  lastMessage : {type : String},
+  lastMessageAt : {type : Date},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

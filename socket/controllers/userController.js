@@ -7,7 +7,7 @@ dotenv.config();
 class UserController {
   constructor() {
     console.log("UserController initialized");
-    this.envSecret = process.env.JWT_SECRET || 'secret';
+    this.envSecret = process.env.JWT_SECRET || "secret";
     // const userService = new UserService();
     // this.userService = userService
   }
@@ -16,9 +16,9 @@ class UserController {
     const userData = req.body;
 
     console.log(userData);
-    
+
     const existingUser = await userService.getUser(userData.username);
-    
+
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
@@ -32,7 +32,7 @@ class UserController {
   }
 
   async getUser(req, res) {
-    const { username } = req.user;
+    const username = req.query.username
 
     try {
       const user = await userService.getUser(username);
@@ -44,7 +44,17 @@ class UserController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
-
+  async handleFetchAll(req, res) {
+    try {
+      const users = await User.find();
+      res.status(200).json({
+        success: true,
+        data: users,
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async login(req, res) {
     const { username, password } = req.body;
     try {
@@ -59,7 +69,7 @@ class UserController {
       const token = jwt.sign({ username: user.username }, this.envSecret, {
         expiresIn: "1h",
       });
-      return res.status(200).json({ token });
+      return res.status(200).json({ token, _id : user._id });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error" });
     }
