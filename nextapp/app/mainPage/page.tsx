@@ -612,14 +612,15 @@ export default function MainPage() {
                 ))}
               </div>
             )}
+            // This is the updated input area for your mainPage/page.tsx
             <div className="h-[10vh] flex items-center justify-between bg-black mx-5 mb-5 rounded-xl overflow-hidden">
-              <div className="flex items-center w-[85%] h-full">
+              <div className="flex items-center w-[85%] h-full bg-transparent">
                 <input
                   onChange={(e) => setCurrentMessage(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      if (chats[chatState])
+                      if (chats[chatState] && currentMessage.trim())
                         handleSendMessage(
                           currentMessage,
                           myUserId,
@@ -637,20 +638,24 @@ export default function MainPage() {
                   value={currentMessage}
                   type="text"
                   placeholder="Send a message"
-                  className="w-full h-full text-2xl px-5 focus-visible:outline-0 border-none"
+                  className="w-full h-full text-2xl px-5 focus-visible:outline-0 border-none bg-transparent text-white"
                   style={{
                     backgroundColor: "var(--background)",
-                    color: "var(--foreground)",
                   }}
                 />
-                <div className="h-full flex items-center pr-2">
+                <div
+                  className="h-full flex items-center pr-4"
+                  style={{ backgroundColor: "var(--background)" }}
+                >
                   <EmojiPicker onEmojiSelect={handleEmojiSelect} />
                 </div>
               </div>
               <button
                 type="button"
+                disabled={!currentMessage.trim()}
                 tabIndex={0}
-                onClick={() =>
+                onClick={() => {
+                  if (!currentMessage.trim()) return;
                   handleSendMessage(
                     currentMessage,
                     myUserId,
@@ -662,12 +667,13 @@ export default function MainPage() {
                     chats[chatState]._id,
                     chats[chatState].isGroup,
                     "user"
-                  )
-                }
-                className="flex justify-center items-center w-[15%] h-full"
+                  );
+                }}
+                className="flex justify-center items-center w-[15%] h-full transition-opacity"
                 style={{
                   backgroundColor: "var(--primary)",
                   color: "var(--background)",
+                  opacity: currentMessage.trim() ? 1 : 0.5,
                 }}
               >
                 <SendHorizontal size={30} />
