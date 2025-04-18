@@ -1,4 +1,3 @@
-// แก้ไขไฟล์ nextapp/app/components/Home.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,7 +8,6 @@ import { useForm } from "react-hook-form";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -27,7 +25,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { z } from "zod";
-import Link from "next/link";
 
 // Schemas
 const formSchema = z.object({
@@ -245,7 +242,7 @@ export default function HomeComponent() {
               <div
                 onClick={() => setIsLogin(false)}
                 style={fixedStyles.link}
-                className="ml-1 underline"
+                className="ml-1 underline cursor-pointer"
               >
                 Register
               </div>
@@ -350,7 +347,7 @@ export default function HomeComponent() {
               <div
                 onClick={() => setIsLogin(true)}
                 style={fixedStyles.link}
-                className="ml-1 underline"
+                className="ml-1 underline cursor-pointer"
               >
                 Login
               </div>
