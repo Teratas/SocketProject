@@ -612,7 +612,7 @@ export default function MainPage() {
                 ))}
               </div>
             )}
-            // This is the updated input area for your mainPage/page.tsx
+
             <div className="h-[10vh] flex items-center justify-between bg-black mx-5 mb-5 rounded-xl overflow-hidden">
               <div className="flex items-center w-[85%] h-full bg-transparent">
                 <input
