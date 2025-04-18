@@ -6,6 +6,8 @@ import axios from "axios";
 import { signOut } from "next-auth/react";
 import CreateGroupCommand from "../components/CreateGroupCommand";
 import ShowChatCommand from "../components/ShowChatCommand";
+import { ThemeSwitcher } from "../components/ThemeSwitcher";
+
 import { LogOut, SendHorizontal, Users } from "lucide-react";
 import {
   Dialog,
@@ -387,7 +389,13 @@ export default function MainPage() {
     }
   };
   return (
-    <main className="text-white min-h-screen bg-black h-screen w-screen flex">
+    <main
+      className="text-white min-h-screen h-screen w-screen flex"
+      style={{
+        backgroundColor: "var(--background)",
+        color: "var(--foreground)",
+      }}
+    >
       <div className="border  m-5 bg-gray-700 border-gray-700 w-[20%] z-10 rounded-l-2xl ">
         <div
           className="w-full h-[10%]  rounded-2xl text-2xl flex justify-around items-center"
@@ -459,7 +467,11 @@ export default function MainPage() {
               <div className="flex justify-center items-start py-6">
                 <Button
                   onClick={handleJoinGroup}
-                  className="bg-gray-500 w-[50%] h-[50px] hover:bg-gray-300 hover:text-black"
+                  className="w-[50%] h-[50px] join-group-button"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    color: "var(--background)",
+                  }}
                 >
                   Join Group
                 </Button>
@@ -534,10 +546,17 @@ export default function MainPage() {
                       <div
                         className={`${
                           isISent ? "order-2" : ""
-                        } px-5 text-2xl bg-blue-500 rounded-2xl  break-words whitespace-normal max-w-[500px] max-h-[400px]`}
+                        } px-5 text-2xl rounded-2xl break-words whitespace-normal max-w-[500px] max-h-[400px]`}
+                        style={{
+                          backgroundColor: isISent
+                            ? "var(--primary)"
+                            : "var(--secondary)",
+                          color: "var(--background)",
+                        }}
                       >
                         {message.message}
                       </div>
+
                       <span
                         className={`text-xs flex items-end ${
                           isISent ? "order-1 mr-2" : "ml-2"
@@ -568,7 +587,7 @@ export default function MainPage() {
                 ))}
               </div>
             )}
-            <div className="h-[10vh] flex items-center justify-between bg-black m-10 rounded-4xl">
+            <div className="h-[10vh] flex items-center justify-between bg-black mx-5 mb-5 rounded-xl overflow-hidden">
               <input
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -593,7 +612,11 @@ export default function MainPage() {
                 value={currentMessage}
                 type="text"
                 placeholder="Send a message"
-                className="w-[80%] h-[80%] text-2xl px-5 focus-visible:outline-0"
+                className="w-[85%] h-full text-2xl px-5 focus-visible:outline-0 border-none"
+                style={{
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                }}
               />
               <button
                 type="button"
@@ -612,9 +635,13 @@ export default function MainPage() {
                     'user'
                   )
                 }
-                className="bg-blue-500 flex justify-center items-center w-[10%] h-[100%] rounded-2xl"
+                className="flex justify-center items-center w-[15%] h-full"
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--background)",
+                }}
               >
-                <SendHorizontal size={40} />
+                <SendHorizontal size={30} />
               </button>
             </div>
           </div>
@@ -649,6 +676,9 @@ export default function MainPage() {
               </div>
             ))}
           </div>
+          <div className="mt-4 flex justify-center">
+            <ThemeSwitcher />
+          </div>
         </div>
 
         <button
@@ -657,9 +687,9 @@ export default function MainPage() {
             setCookie("id", "");
             await signOut();
           }}
-          className="h-[8%]  rounded-2xl gap-4 text-2xl flex px-10 items-center w-full hover:bg-gray-400"
+          className="h-[10%] mx-4 my-2 rounded-xl gap-4 text-2xl font-bold flex justify-center items-center w-[90%] bg-red-600 hover:bg-red-700 transition-colors shadow-lg"
         >
-          <LogOut />
+          <LogOut className="size-6" />
           <span>Log out</span>
         </button>
       </div>
