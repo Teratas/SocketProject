@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 import CreateGroupCommand from "../components/CreateGroupCommand";
 import ShowChatCommand from "../components/ShowChatCommand";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
-
+import EmojiPicker from "../components/EmojiPicker";
 import { LogOut, SendHorizontal, Users } from "lucide-react";
 import {
   Dialog,
@@ -109,9 +109,13 @@ export default function MainPage() {
         const userID = getCookie("id") as string;
         const username = getCookie("username") as string;
         console.log(1);
-        console.log('received update-chat', chat)
-        console.log('user' , {username, _id: userID})
-        if (chat.participants.some((p) => p.username === username && p._id === userID)) {
+        console.log("received update-chat", chat);
+        console.log("user", { username, _id: userID });
+        if (
+          chat.participants.some(
+            (p) => p.username === username && p._id === userID
+          )
+        ) {
           console.log("2");
           setChats((prevChats) => {
             const index = prevChats.findIndex(
@@ -127,20 +131,22 @@ export default function MainPage() {
               return [...prevChats, chat];
             }
           });
-        }else{
-          console.log(3)
-          setAllGroupChat(prevGroupChats => {
-            const index = prevGroupChats.findIndex((oldGroup) => oldGroup._id === chat._id)
-            if(index > -1){
+        } else {
+          console.log(3);
+          setAllGroupChat((prevGroupChats) => {
+            const index = prevGroupChats.findIndex(
+              (oldGroup) => oldGroup._id === chat._id
+            );
+            if (index > -1) {
               return [
                 ...prevGroupChats.slice(0, index),
                 chat,
-                ...prevGroupChats.slice(index + 1)
-              ]
-            }else{
-              return [...prevGroupChats, chat]
+                ...prevGroupChats.slice(index + 1),
+              ];
+            } else {
+              return [...prevGroupChats, chat];
             }
-          })
+          });
         }
       } else setRefreshKey((prevKey) => !prevKey);
     };
@@ -262,23 +268,25 @@ export default function MainPage() {
   }, [chatState, chats, socket]);
 
   useEffect(() => {
-    const handleUnsendMessage = (message : messageInterface) => {
-      console.log('unsend1')
-      const chatIndex = chats.findIndex(chat => chat._id === message.chatId)
-      console.log(chatIndex)
-      if(message && chatIndex === chatState){
-        setCurrentChatMessages(prevState => {
-          const messageIndex = prevState.findIndex(prevMessage => prevMessage._id === message._id)
+    const handleUnsendMessage = (message: messageInterface) => {
+      console.log("unsend1");
+      const chatIndex = chats.findIndex((chat) => chat._id === message.chatId);
+      console.log(chatIndex);
+      if (message && chatIndex === chatState) {
+        setCurrentChatMessages((prevState) => {
+          const messageIndex = prevState.findIndex(
+            (prevMessage) => prevMessage._id === message._id
+          );
 
           return [
             ...prevState.slice(0, messageIndex),
             message,
-            ...prevState.slice(messageIndex + 1)
+            ...prevState.slice(messageIndex + 1),
           ];
-        })
+        });
       }
     };
-    console.log("Turn On Unsend Message Socket")
+    console.log("Turn On Unsend Message Socket");
     socket?.on("unsend-message", handleUnsendMessage);
     return () => {
       socket?.off("unsend-message", handleUnsendMessage);
@@ -288,9 +296,9 @@ export default function MainPage() {
   const token = getCookie("token") as string;
   const [open, setOpen] = useState<boolean>(false);
   const [changeChatNameOpen, setChangeChatNameOpen] = useState<boolean>(false);
-  const [unsendMessageOpen, setUnsendMessageOpen] = useState<boolean>(false)
+  const [unsendMessageOpen, setUnsendMessageOpen] = useState<boolean>(false);
   const [unsendMessage, setUnsendMessage] = useState<messageInterface>({
-      _id: "",
+    _id: "",
     chatId: "",
     sender: { username: "", _id: "" },
     receiver: { username: "", _id: "" },
@@ -298,7 +306,7 @@ export default function MainPage() {
     isGroup: false,
     isUnsent: false,
     type: "user",
-    timestamp: ""
+    timestamp: "",
   });
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
@@ -351,11 +359,11 @@ export default function MainPage() {
       receiver,
       chatId,
       isGroup: isGroup,
-      type
+      type,
     };
-    console.log(messageData)
+    console.log(messageData);
     socket?.emit("direct-message", messageData);
-    if (type === 'user') setCurrentMessage("");
+    if (type === "user") setCurrentMessage("");
   };
 
   const handleJoinGroup = async () => {
@@ -388,6 +396,11 @@ export default function MainPage() {
       });
     }
   };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setCurrentMessage((prev) => prev + emoji);
+  };
+
   return (
     <main
       className="text-white min-h-screen h-screen w-screen flex"
@@ -499,7 +512,7 @@ export default function MainPage() {
                   chat={chats[chatState]}
                   refreshKey={refreshKey}
                   setRefreshKey={setRefreshKey}
-                  handleStatusMessage = {handleSendMessage}
+                  handleStatusMessage={handleSendMessage}
                 />
               )}
             </div>
@@ -507,17 +520,25 @@ export default function MainPage() {
               className="h-[80%] overflow-y-scroll p-5 bg-gray-700 flex flex-col"
               style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
             >
-              {<UnsendMessageDialog open={unsendMessageOpen} setOpen={setUnsendMessageOpen} message={unsendMessage} refreshKey={refreshKey} setRefreshKey={setRefreshKey}/>}
+              {
+                <UnsendMessageDialog
+                  open={unsendMessageOpen}
+                  setOpen={setUnsendMessageOpen}
+                  message={unsendMessage}
+                  refreshKey={refreshKey}
+                  setRefreshKey={setRefreshKey}
+                />
+              }
               {currentChatMessages.map((message, index) => {
                 const isISent = message.sender._id === myUserId;
                 return (
                   <div
                     className={`flex flex-col mt-5 mb-3 ${
-                      isISent && message.type !== 'status' ? 
-                        message.isUnsent
-                        ? "self-end mr-5":
-                          "self-end mr-5 cursor-pointer" 
-                      : "self-start ml-5"
+                      isISent && message.type !== "status"
+                        ? message.isUnsent
+                          ? "self-end mr-5"
+                          : "self-end mr-5 cursor-pointer"
+                        : "self-start ml-5"
                     }`}
                     key={index}
                     ref={
@@ -525,15 +546,17 @@ export default function MainPage() {
                         ? currentMessageRef
                         : null
                     }
-                    onClick={()=>{
-                      console.log(message)
-                      if (isISent && !message.isUnsent && message.type === 'user') 
-                      {
-                        setUnsendMessage(message)
-                        setUnsendMessageOpen(true)
+                    onClick={() => {
+                      console.log(message);
+                      if (
+                        isISent &&
+                        !message.isUnsent &&
+                        message.type === "user"
+                      ) {
+                        setUnsendMessage(message);
+                        setUnsendMessageOpen(true);
                       }
-                    }
-                  }
+                    }}
                   >
                     <span
                       className={`text-xl ${
@@ -579,7 +602,9 @@ export default function MainPage() {
               <div className="w-full justify-center flex text-gray-300 ">
                 <span className="mr-0.5">Members: </span>
                 {chats[chatState].participants.map((participant, index) => (
-                  <span key={index} className="mr-0.5">{`${participant.username}${
+                  <span key={index} className="mr-0.5">{`${
+                    participant.username
+                  }${
                     index == chats[chatState].participants.length - 1
                       ? ""
                       : ", "
@@ -587,41 +612,50 @@ export default function MainPage() {
                 ))}
               </div>
             )}
+
             <div className="h-[10vh] flex items-center justify-between bg-black mx-5 mb-5 rounded-xl overflow-hidden">
-              <input
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    if (chats[chatState])
-                      handleSendMessage(
-                        currentMessage,
-                        myUserId,
-                        chats[chatState].participants.length === 1
-                          ? myUserId
-                          : chats[chatState].participants[0]._id === myUserId
-                          ? chats[chatState].participants[1]._id
-                          : chats[chatState].participants[0]._id,
-                        chats[chatState]._id,
-                        chats[chatState].isGroup,
-                        'user'
-                      );
+              <div className="flex items-center w-[85%] h-full bg-transparent">
+                <input
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (chats[chatState] && currentMessage.trim())
+                        handleSendMessage(
+                          currentMessage,
+                          myUserId,
+                          chats[chatState].participants.length === 1
+                            ? myUserId
+                            : chats[chatState].participants[0]._id === myUserId
+                            ? chats[chatState].participants[1]._id
+                            : chats[chatState].participants[0]._id,
+                          chats[chatState]._id,
+                          chats[chatState].isGroup,
+                          "user"
+                        );
                     }
-                  }
-                }
-                value={currentMessage}
-                type="text"
-                placeholder="Send a message"
-                className="w-[85%] h-full text-2xl px-5 focus-visible:outline-0 border-none"
-                style={{
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                }}
-              />
+                  }}
+                  value={currentMessage}
+                  type="text"
+                  placeholder="Send a message"
+                  className="w-full h-full text-2xl px-5 focus-visible:outline-0 border-none bg-transparent text-white"
+                  style={{
+                    backgroundColor: "var(--background)",
+                  }}
+                />
+                <div
+                  className="h-full flex items-center pr-4"
+                  style={{ backgroundColor: "var(--background)" }}
+                >
+                  <EmojiPicker onEmojiSelect={handleEmojiSelect} />
+                </div>
+              </div>
               <button
                 type="button"
+                disabled={!currentMessage.trim()}
                 tabIndex={0}
-                onClick={() =>
+                onClick={() => {
+                  if (!currentMessage.trim()) return;
                   handleSendMessage(
                     currentMessage,
                     myUserId,
@@ -632,13 +666,14 @@ export default function MainPage() {
                       : chats[chatState].participants[0]._id,
                     chats[chatState]._id,
                     chats[chatState].isGroup,
-                    'user'
-                  )
-                }
-                className="flex justify-center items-center w-[15%] h-full"
+                    "user"
+                  );
+                }}
+                className="flex justify-center items-center w-[15%] h-full transition-opacity"
                 style={{
                   backgroundColor: "var(--primary)",
                   color: "var(--background)",
+                  opacity: currentMessage.trim() ? 1 : 0.5,
                 }}
               >
                 <SendHorizontal size={30} />
