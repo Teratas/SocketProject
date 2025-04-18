@@ -20,9 +20,6 @@ export function ThemedButton({
   className = "",
   disabled = false,
 }: ThemedButtonProps) {
-  const { getCurrentTheme } = useTheme();
-  const theme = getCurrentTheme();
-
   // Compute style based on variant
   const getStyle = () => {
     switch (variant) {

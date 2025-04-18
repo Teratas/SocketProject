@@ -534,8 +534,8 @@ export default function MainPage() {
                 return (
                   <div
                     className={`flex flex-col mt-5 mb-3 ${
-                      isISent && message.type !== "status"
-                        ? message.isUnsent
+                      isISent
+                        ? message.isUnsent || message.type === "status"
                           ? "self-end mr-5"
                           : "self-end mr-5 cursor-pointer"
                         : "self-start ml-5"
