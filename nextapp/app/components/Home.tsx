@@ -170,10 +170,12 @@ export default function HomeComponent() {
           className="w-[500px] h-[350px] flex flex-col"
         >
           <CardHeader>
+
             <CardTitle
               style={fixedStyles.title}
               className="flex items-center flex-col"
             >
+
               <span className="mt-5 md:mt-0">Login</span>
             </CardTitle>
           </CardHeader>
@@ -234,11 +236,9 @@ export default function HomeComponent() {
             </fieldset>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <div
-              className="text-muted-foreground text-sm flex"
-              style={{ color: "#4b5563" }}
-            >
-              Don't have an account?{" "}
+
+            <div className="text-muted-foreground text-sm flex">
+              Don&#39;t have an account?{" "}
               <div
                 onClick={() => setIsLogin(false)}
                 style={fixedStyles.link}

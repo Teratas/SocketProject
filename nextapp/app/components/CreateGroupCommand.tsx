@@ -18,9 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { getCookie } from "cookies-next/client";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
-import { MessageSquareText, MessagesSquare } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { MessagesSquare } from "lucide-react";
 
 export default function CreateGroupCommand({
   clickUserToCreateChat,
@@ -29,11 +28,11 @@ export default function CreateGroupCommand({
   open,
   setOpen
 }: {
-  clickUserToCreateChat: Function;
+  clickUserToCreateChat: (username:string)=>(Promise<void>);
   refreshKey: boolean;
-  setRefreshKey: Function;
+  setRefreshKey: Dispatch<SetStateAction<boolean>>;
   open : boolean;
-  setOpen : any;
+  setOpen : Dispatch<SetStateAction<boolean>>;
 }) {
   const [users, setUsers] = useState<Array<{ _id: string; username: string }>>(
     []

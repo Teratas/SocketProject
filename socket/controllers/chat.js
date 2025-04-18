@@ -139,23 +139,25 @@ exports.createChat = async (req, res, next) => {
         message: "Failed to create chat",
       });
     }
+    await chat.populate('participants', 'username')
     const socket = require("../lib/socket");
     const io = socket.getIO();
     // if(!isGroup){
-    participants.forEach((participant) => {
-      // console.log('io', io)
-      if (Object.keys(connectedPeer).includes(participant)) {
-        io.to(connectedPeer[participant].socketID).emit("update-chat", "");
-        console.log("sent to socket " + connectedPeer[participant].socketID);
-      }
-    });
+    // participants.forEach((participant) => {
+    //   // console.log('io', io)
+    //   if (Object.keys(connectedPeer).includes(participant)) {
+    //     io.to(connectedPeer[participant].socketID).emit("update-chat", "");
+    //     console.log("sent to socket " + connectedPeer[participant].socketID);
+    //   }
+    // });
+    io.emit('update-chat', chat)
     // }
     // else{
     //   io.to(name).emit('update-chat', chat)
     //   console.log('chat group ' + chat)
     //   console.log("Sent to Room " + name)
     // }
-
+    
     res.status(200).json({
       success: true,
       chat,
@@ -164,3 +166,47 @@ exports.createChat = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.changeChatName = async (req, res, next) => {
+  try {
+    console.log(req.body);
+
+    const {chatID, userID, newName} = req.body
+    const groupChat = await Chat.findById(chatID);
+    console.log(groupChat)
+    if (!groupChat) {
+      return res.status(404).json({success: false, message: "Chat not found" });
+    }
+    const isJoined = groupChat.participants.some(participant =>
+      participant.equals(userID)
+    );
+    console.log(isJoined)
+    // prevent unrelated person to change group name
+    if (!isJoined) {
+      return res.status(400).json({success: false, message: "User can't change name of group chat they are not in" });
+    }
+    if (groupChat.name === newName) {
+      return res.status(400).json({success: false, message: "The new name is equivalent to old name of the group chat" });
+    }
+    groupChat.name = newName.toString();
+    await groupChat.save();
+    console.log(groupChat)
+    await groupChat.populate('participants', 'username')
+
+    const socket = require("../lib/socket");
+    const io = socket.getIO();
+    // if(!isGroup){
+    io.emit('update-chat', groupChat)
+    // groupChat.participants.forEach((participant) => {
+    //   // console.log('io', io)
+    //   if (Object.keys(connectedPeer).includes(participant)) {
+    //     io.to(connectedPeer[participant].socketID).emit("update-chat", "");
+    //     console.log("sent to socket " + connectedPeer[participant].socketID);
+    //   }
+    // });
+
+    return res.status(200).json({success: true, message: `Name is changed to ${newName}`, chat: groupChat });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" })
+  }
+}
