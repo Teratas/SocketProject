@@ -6,14 +6,11 @@ import { Session } from "next-auth";
 
 export default async function Home() {
   const session: Session | null = await auth();
-  if (session && session.user && session.user.id) {
+  if (session && session.user! && session.user.id!) {
     redirect("/mainPage");
   }
   return (
-    <div
-      className="bg-black min-h-screen h-screen w-screen flex justify-center items-center"
-      style={{ backgroundColor: "#000000" }}
-    >
+    <div className="bg-black min-h-screen h-screen w-screen flex justify-center items-center">
       <HomeComponent />
     </div>
   );
