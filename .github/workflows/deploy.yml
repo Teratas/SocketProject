@@ -143,13 +143,13 @@ jobs:
           host: ec2-18-204-209-146.compute-1.amazonaws.com
           username: ec2-user
           key: ./id_rsa
-          script: |
-            sudo docker pull llab/network-nextapp:latest
-            sudo docker pull llab/network-socket:latest
-            sudo docker stop socket || true
-            sudo docker stop nextapp || true
-            sudo docker socket || true
-            sudo docker nextapp || true
-            sudo docker network create my-network 
-            sudo docker run -d -p 3000:3000 --name nextapp --network my-network llab/network-nextapp:latest
-            sudo docker run -d -p 3001:3001 --name socket --network my-network llab/network-socket:latest
+      #     script: |
+      #       sudo docker pull llab/network-nextapp:latest
+      #       sudo docker pull llab/network-socket:latest
+      #       sudo docker stop socket || true
+      #       sudo docker stop nextapp || true
+      #       sudo docker socket || true
+      #       sudo docker nextapp || true
+      #       sudo docker network create my-network 
+      #       sudo docker run -d -p 3000:3000 --name nextapp --network my-network llab/network-nextapp:latest
+      #       sudo docker run -d -p 3001:3001 --name socket --network my-network llab/network-socket:latest
