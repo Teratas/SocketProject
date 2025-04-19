@@ -132,6 +132,13 @@ jobs:
           echo "Checking key file..."
           test -f id_rsa && echo "Key file exists" || echo "Missing key file"
           test -s id_rsa && echo "Key file has content" || echo "Key file is empty"
+      
+      - name: Print SSH key head and tail (safe)
+        run: |
+          echo "First line of key:"
+          head -n 1 id_rsa
+          echo "Last line of key:"
+          tail -n 1 id_rsa
 
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
