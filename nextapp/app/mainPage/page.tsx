@@ -70,7 +70,7 @@ export default function MainPage() {
     const handleFetchAllGroupChat = async () => {
       const userID = getCookie("id");
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/getGroupMessageChat`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/getGroupMessageChat`,
         {
           userID: userID,
         },
@@ -88,7 +88,7 @@ export default function MainPage() {
   const handleClickChat = async (index: number) => {
     const chat = chats[index];
     const messages = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/messages/get-messages?chatId=` +
+      `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/messages/get-messages?chatId=` +
         chat._id,
       {
         headers: {
@@ -169,7 +169,7 @@ export default function MainPage() {
   useEffect(() => {
     const handleFetchDirectChat = async () => {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/getDirectMessageChat`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/getDirectMessageChat`,
         {
           userID: id,
         },
@@ -310,7 +310,7 @@ export default function MainPage() {
   });
   const clickUserToCreateChat = async (username: string) => {
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/user` + "?username=" + username,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/user` + "?username=" + username,
       {
         headers: {
           bearer: token,
@@ -331,7 +331,7 @@ export default function MainPage() {
         userID: myUserId,
       };
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/create-chat`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/create-chat`,
         data,
         {
           headers: {
@@ -367,7 +367,7 @@ export default function MainPage() {
   };
 
   const handleJoinGroup = async () => {
-    const apiURL = `${process.env.NEXT_PUBLIC_BASE_URL}/chats/join-group-chat`;
+    const apiURL = `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/join-group-chat`;
     const chatID = allGroupChat[allChatState]._id;
     const userID = myUserId;
     const joinGroupData = {

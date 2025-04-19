@@ -40,7 +40,7 @@ export default function ChangeGroupChatNameDialog({open, setOpen, currentName, c
       };
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/change-name`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/change-name`,
         changeGroupNamedata,
         {
           headers : {

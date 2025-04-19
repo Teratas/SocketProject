@@ -48,7 +48,7 @@ export default function CreateGroupCommand({
   useEffect(() => {
     const handleFetchAllUser = async () => {
       const allUser = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/allUser`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/user/allUser`,
         {
           headers: {
             bearer: token,
@@ -88,7 +88,7 @@ export default function CreateGroupCommand({
       };
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/chats/create-chat`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/chats/create-chat`,
         data,
         {
           headers : {

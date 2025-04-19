@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  socket:
+    image: llab/network-socket:latest
+    container_name: socket
+    build:
+      context: ./socket
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "3001:3001"
+  
+  nextapp:
+    image: llab/network-nextapp:latest
+    container_name: nextapp
+    build:
+      context: ./nextapp
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    depends_on:
+      - socket
+    ports:
+      - "3000:3000"
+
+networks:
+  app-network:
+    driver: bridge

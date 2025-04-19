@@ -3,7 +3,6 @@
 
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "./ThemeProvider";
 
 interface ThemedButtonProps {
   children: ReactNode;

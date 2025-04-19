@@ -33,7 +33,7 @@ export default function UnsendMessageDialog({open, setOpen, message, refreshKey,
       };
 
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/messages/unsend-message`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/messages/unsend-message`,
         unsendMessagedata,
         {
           headers : {
