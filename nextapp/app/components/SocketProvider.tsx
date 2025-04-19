@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   useEffect(() => {
-    const socket = io(`${process.env.NEXT_PUBLIC_BASE_URL}`, {
+    const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}`, {
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 1000,
