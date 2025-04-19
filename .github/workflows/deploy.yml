@@ -137,6 +137,15 @@ jobs:
         run: |
           ssh-keygen -l -f id_rsa || echo "Invalid key"
 
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          sudo usermod -aG docker ec2-user
+          newgrp docker
+
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
