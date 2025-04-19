@@ -113,7 +113,7 @@ jobs:
       
       - name: Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > id_rsa
+          echo "${{ secrets.MY_EC2_SSH_KEY }}" > id_rsa
           chmod 400 id_rsa
       
       - name: Check if SSH key was written correctly
