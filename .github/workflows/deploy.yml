@@ -140,9 +140,9 @@ jobs:
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-18-204-209-146.compute-1.amazonaws.com
+          host: ec2-52-5-66-129.compute-1.amazonaws.com
           username: ec2-user
-          key: ./id_rsa
+          key_path: ./id_rsa
       #     script: |
       #       sudo docker pull llab/network-nextapp:latest
       #       sudo docker pull llab/network-socket:latest
