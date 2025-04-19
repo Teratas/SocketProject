@@ -140,7 +140,7 @@ jobs:
       - name: Install Docker
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-          sudo usermod -aG docker ec2-user
+          sudo usermod -aG docker $(whoami)
           newgrp docker
           newgrp docker
 
