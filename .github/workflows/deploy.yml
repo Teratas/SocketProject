@@ -128,6 +128,14 @@ jobs:
           head -n 1 id_rsa
           echo "Last line of key:"
           tail -n 1 id_rsa
+      
+      - name: Confirm SSH key file size
+        run: |
+          stat --format="Size: %s bytes" id_rsa
+
+      - name: Validate SSH private key
+        run: |
+          ssh-keygen -l -f id_rsa || echo "Invalid key"
 
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
