@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
   socket:
-    image: socket-image:latest
+    image: llab/network-socket:latest
+    container_name: socket
     build:
       context: ./socket
       dockerfile: Dockerfile
@@ -12,7 +13,8 @@ services:
       - "3001:3001"
   
   nextapp:
-    image: nextapp-image:latest
+    image: llab/network-nextapp:latest
+    container_name: nextapp
     build:
       context: ./nextapp
       dockerfile: Dockerfile
