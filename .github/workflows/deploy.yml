@@ -137,13 +137,6 @@ jobs:
         run: |
           ssh-keygen -l -f id_rsa || echo "Invalid key"
 
-      - name: Install Docker
-        run: |
-          curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-          sudo usermod -aG docker $(whoami)
-          newgrp docker
-          newgrp docker
-
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -161,4 +154,5 @@ jobs:
             sudo docker run -d -p 3000:3000 --platform linux/amd64 --name nextapp --network my-network llab/network-nextapp:latest
             sudo docker run -d -p 3001:3001 --platform linux/amd64 --name socket --network my-network llab/network-socket:latest
 
-# docker buildx build --platform linux/arm64 -t llab/network-nextapp ./nextapp
+# docker buildx build --platform linux/amd64 -t llab/network-nextapp ./nextapp
+# docker push llab/network-nextapp
