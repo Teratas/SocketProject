@@ -95,7 +95,7 @@ export default function HomeComponent() {
 
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/user/register`,
         params
       );
       console.log("res", res);
